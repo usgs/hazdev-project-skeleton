@@ -8,18 +8,9 @@ Project skeleton for hazdev web applications.
 Generating a new Project
 ------------------------
 
-- create project directory
-```
-mkdir new-project
-```
-- create skeleton from hazdev-project-skeleton master branch
-```
-git archive \
-    --repo=https://github.com/usgs/hazdev-project-skeleton master \
-    --format=tar \
-    | (cd new-project && tar xf -)
-```
-- update package.json, README.md with new-project name
+- Download ZIP of current repository (button to the right of URLs)
+- extract and rename folder to `new-project`
+- update package.json, README.md with `new-project` name
 - set default MOUNT_PATH in src/lib/configure.inc.php
 - import into new repository
 
