@@ -19,6 +19,7 @@ Using the Generated Project
 ---------------------------
 
 ## Getting Started
+- run `npm install` to install application development dependencies
 - configure the application
 - run `grunt` from the install directory
 
