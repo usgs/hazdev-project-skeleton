@@ -1,7 +1,8 @@
 'use strict';
 
 
-var config = require('./config'),
+var babelify = require('babelify'),
+    config = require('./config'),
     glob = require('glob');
 
 
@@ -33,7 +34,12 @@ var browserify = {
     browserifyOptions: {
       debug: true,
       paths: Object.keys(config.jsPath)
-    }
+    },
+    transform: [
+      babelify.configure({
+        presets: ['es2015']
+      })
+    ]
   },
 
 
