@@ -56,3 +56,28 @@ jsPath: {
   'node_modules/other-module/dist': null
 }
 ```
+
+## Docker
+
+### Building a container
+
+From root of project, run:
+    ```
+    docker build -t project-skeleton:version .
+    ```
+
+### Running container
+
+- Run the container using the tag
+    ```
+    docker run -it -p 8000:8881 project-skeleton:version
+    ```
+
+- Connect to running container in browser
+    ```
+    docker-machine env default \
+        | grep HOST \
+        | sed s/.*tcp/http/g \
+        | awk -F: '{print $1":"$2":8000"}' \
+        | xargs open
+    ```
