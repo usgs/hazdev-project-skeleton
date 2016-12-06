@@ -1,6 +1,11 @@
 'use strict';
 
-var config = require('./config');
+var config = require('./config'),
+    fs = require('fs'),
+    packageJson;
+
+// read package.json
+packageJson = JSON.parse(fs.readFileSync('package.json'));
 
 
 var copy = {
@@ -17,7 +22,11 @@ var copy = {
     ],
     filter: 'isFile',
     options: {
-      mode: true
+      mode: true,
+      process: function (content/*, srcpath*/) {
+        // replace {{VERSION}} in php/html with version from package.json
+        return content.replace('{{VERSION}}', packageJson.version);
+      }
     }
   },
 

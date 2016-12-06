@@ -7,6 +7,7 @@ if (!isset($TEMPLATE)) {
   // defines the $CONFIG hash of configuration variables
   include_once '../conf/config.inc.php';
 
+  $TITLE = 'Hazdev Project Skeleton v{{VERSION}}';
   $HEAD = '<link rel="stylesheet" href="css/index.css"/>';
   $FOOT = '<script src="js/index.js"></script>';
 
