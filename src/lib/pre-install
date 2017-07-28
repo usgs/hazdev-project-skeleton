@@ -1,19 +1,34 @@
-#!/usr/bin/env bash
+#! /bin/bash
 
+
+# work in this directory
 pushd `dirname $0` > /dev/null 2>&1;
 
-PHP_BIN=`which php`;
 
-if [ -z "$PHP_BIN" ]; then
-  read -p 'PHP executable not found, enter path to php: ' PHP_BIN;
-fi
+: ${APP_NAME:=hazdev-app}
+: ${MOUNT_PATH:=/mount/path}
+# these usually use defaults
+: ${APP_DIR:=/data/www/apps/${APP_NAME}}
+: ${HTDOCS_DIR:=${APP_DIR}/htdocs}
+: ${HTTPD_CONF:=${APP_DIR}/conf/httpd.conf}
 
-if [ -x "$PHP_BIN" ]; then
-  $PHP_BIN ./pre-install.php
-else
-  echo 'PHP executable not found, unable to run pre-install.php';
-  exit 1;
-fi
+
+# generate httpd.conf
+cat > ${HTTPD_CONF} <<-EOF
+	Alias ${MOUNT_PATH} ${HTDOCS_DIR}
+
+	<Directory ${HTDOCS_DIR}>
+		Require method GET OPTIONS
+
+		ExpiresActive on
+		ExpiresDefault "access plus 1 day"
+
+		SetEnv MOUNT_PATH ${MOUNT_PATH}
+
+		# todo: add rewrite examples
+	</Directory>
+EOF
+
 
 popd > /dev/null 2>&1;
 exit 0;

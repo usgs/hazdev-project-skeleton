@@ -2,11 +2,18 @@
 
 push `dirname $0` > /dev/null 2>&1;
 
-configFile='../conf/config.ini';
-httpdFile='../conf/httpd.conf';
+
+: ${APP_NAME:=hazdev-app}
+: ${MOUNT_PATH:=/mount/path}
+# these usually use defaults
+: ${APP_DIR:=/data/www/apps/${APP_NAME}}
+: ${HTDOCS_DIR:=${APP_DIR}/htdocs}
+: ${HTTPD_CONF:=${APP_DIR}/conf/httpd.conf}
+
 
 # Remove httpd config file, but leave the config INI file in place
-rm -vf ../httpd.conf;
+rm -vf "${HTTPD_CONF}"
+
 
 popd > /dev/null 2>&1;
 
