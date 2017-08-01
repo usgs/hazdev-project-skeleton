@@ -5,6 +5,7 @@
 pushd `dirname $0` > /dev/null 2>&1;
 
 
+# defaults, override in the file ".env"
 : ${APP_NAME:=hazdev-app}
 : ${MOUNT_PATH:=/mount/path}
 # these usually use defaults
@@ -13,19 +14,37 @@ pushd `dirname $0` > /dev/null 2>&1;
 : ${HTTPD_CONF:=${APP_DIR}/conf/httpd.conf}
 
 
+# make sure configuration directory exists
+CONF_DIR=$(dirname ${HTTPD_CONF})
+if [ ! -d CONF_DIR ]; then
+	echo "Creating directory ${CONF_DIR}"
+	mkdir -p "$CONF_DIR"
+fi
+
 # generate httpd.conf
 cat > ${HTTPD_CONF} <<-EOF
 	Alias ${MOUNT_PATH} ${HTDOCS_DIR}
 
 	<Directory ${HTDOCS_DIR}>
+		# only allow GET and OPTIONS requests
 		Require method GET OPTIONS
 
+		# default caching headers
 		ExpiresActive on
 		ExpiresDefault "access plus 1 day"
 
+		# any environment variables are available in PHPs $_ENV superglobal
 		SetEnv MOUNT_PATH ${MOUNT_PATH}
 
-		# todo: add rewrite examples
+		RewriteEngine on
+		RewriteBase ${MOUNT_PATH}
+
+		# Rewrites are executed relative to MOUNT_PATH
+		# and do not require PT, mod_alias has already processed
+		RewriteRule ^rewrite index.php [L]
+
+		# Uncomment the following to enable rewrite logging
+		# LogLevel alert rewrite:trace3
 	</Directory>
 EOF
 
