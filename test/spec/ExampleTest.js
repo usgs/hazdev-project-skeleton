@@ -20,7 +20,7 @@ describe('ExampleTest', function () {
 
     it('has access to "etc" data', function (done) {
       Xhr.ajax({
-        url: '/data.json',
+        url: '/etc/data.json',
         success: function (data) {
           expect(data.test).to.equal('Hello World');
           done();

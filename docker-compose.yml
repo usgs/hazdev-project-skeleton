@@ -1,0 +1,32 @@
+version: '2'
+
+services:
+
+  grunt:
+    env_file:
+      - .env
+    image: usgs/hazdev-base-images:latest-grunt
+    volumes:
+      # app source
+      - './etc:/app/etc:ro'
+      - './example:/app/example:ro'
+      - './src:/app/src:ro'
+      - './test:/app/test:ro'
+      # generated output
+      - './build:/app/build:rw'
+      - './dist:/app/dist:rw'
+
+  httpd:
+    depends_on:
+      - grunt
+    env_file:
+      - .env
+    image: usgs/hazdev-base-images:latest-php-dev
+    ports:
+      - '${EXPOSE_PORT}:80'
+    volumes:
+      - './build/src:/data/www/apps/${APP_NAME}:rw'
+      - './build/test:/data/www/html/test:ro'
+      - './etc:/data/www/html/etc:ro'
+      - './example:/data/www/html/example:ro'
+      - './src/htdocs/_config.inc.php:/data/www/html/_config.inc.php:ro'

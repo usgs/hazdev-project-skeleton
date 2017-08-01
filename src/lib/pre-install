@@ -1,19 +1,53 @@
-#!/usr/bin/env bash
+#! /bin/bash
 
+
+# work in this directory
 pushd `dirname $0` > /dev/null 2>&1;
 
-PHP_BIN=`which php`;
 
-if [ -z "$PHP_BIN" ]; then
-  read -p 'PHP executable not found, enter path to php: ' PHP_BIN;
+# defaults, override in the file ".env"
+: ${APP_NAME:=hazdev-app}
+: ${MOUNT_PATH:=/mount/path}
+# these usually use defaults
+: ${APP_DIR:=/data/www/apps/${APP_NAME}}
+: ${HTDOCS_DIR:=${APP_DIR}/htdocs}
+: ${HTTPD_CONF:=${APP_DIR}/conf/httpd.conf}
+
+
+# make sure configuration directory exists
+CONF_DIR=$(dirname ${HTTPD_CONF})
+if [ ! -d CONF_DIR ]; then
+	echo "Creating directory ${CONF_DIR}"
+	mkdir -p "$CONF_DIR"
 fi
 
-if [ -x "$PHP_BIN" ]; then
-  $PHP_BIN ./pre-install.php
-else
-  echo 'PHP executable not found, unable to run pre-install.php';
-  exit 1;
-fi
+# generate httpd.conf
+cat > ${HTTPD_CONF} <<-EOF
+	Alias ${MOUNT_PATH} ${HTDOCS_DIR}
+
+	<Directory ${HTDOCS_DIR}>
+		# only allow GET and OPTIONS requests
+		Require method GET OPTIONS
+
+		# default caching headers
+		ExpiresActive on
+		ExpiresDefault "access plus 1 day"
+
+		# any environment variables are available in PHPs $_ENV superglobal
+		SetEnv MOUNT_PATH ${MOUNT_PATH}
+
+		RewriteEngine on
+		RewriteBase ${MOUNT_PATH}
+
+		# Rewrites are executed relative to MOUNT_PATH
+		# and do not require PT, mod_alias has already processed
+		RewriteRule ^rewrite index.php [L]
+
+		# Uncomment the following to enable rewrite logging
+		# LogLevel alert rewrite:trace3
+	</Directory>
+EOF
+
 
 popd > /dev/null 2>&1;
 exit 0;
